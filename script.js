@@ -1,43 +1,11 @@
 const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d');
 let timerId
-let points = [
-	{ x: (innerWidth / 100), y: (innerHeight / 2) },
-	{ x: (innerWidth / 2), y: (innerHeight / 100) },
-	{ x: (innerWidth * 0.99), y: (innerHeight / 2) },
-	{ x: (innerWidth / 2), y: (innerHeight * 0.99) },
-
-]
-
 document.body.append(canvas);
-canvas.width = innerWidth;
-canvas.height = innerHeight;
 
-onresize = () => {
-	canvas.width = innerWidth;
-	canvas.height = innerHeight;
-	let points = [
-		{ x: (innerWidth / 100), y: (innerHeight / 2) },
-		{ x: (innerWidth / 2), y: (innerHeight / 100) },
-		{ x: (innerWidth * 0.99), y: (innerHeight / 2) },
-		{ x: (innerWidth / 2), y: (innerHeight * 0.99) },
-	]
+onresize = start;
 
-	drawPolygon(points)
-}
-
-clearInterval(timerId);
-timerId = setInterval(() => {
-	points[0].y--;
-	points[1].x++;
-	points[2].y++;
-	points[3].x--;
-	drawPolygon(points)
-}, 20);
-
-// ctx.fillRect(10, 10, 200, 100);
-
-drawPolygon();
+start();
 
 function drawPolygon(points) {
 	ctx.beginPath()
@@ -56,16 +24,31 @@ function drawPolygon(points) {
 };
 
 function start() {
+	cancelAnimationFrame(timerId);
+
 	canvas.width = innerWidth;
 	canvas.height = innerHeight;
+	let step = 1;
+
 	let points = [
 		{ x: (innerWidth / 100), y: (innerHeight / 2) },
 		{ x: (innerWidth / 2), y: (innerHeight / 100) },
 		{ x: (innerWidth * 0.99), y: (innerHeight / 2) },
 		{ x: (innerWidth / 2), y: (innerHeight * 0.99) },
 	]
-	function animate() {
 
+	animate();
+
+	function animate() {
+		if (points[0].y < innerHeight * 0.01 || points[2].y < innerHeight * 0.01) { step *= -1 };
+
+		points[0].y -= step;
+		points[1].x += step;
+		points[2].y += step;
+		points[3].x -= step;
+		drawPolygon(points)
+
+		timerId = requestAnimationFrame(animate);
 	};
 
 }
